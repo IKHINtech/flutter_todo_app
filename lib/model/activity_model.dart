@@ -26,3 +26,12 @@ class Activity {
         id: json['id'], title: json['title'], createdAt: json['created_at']);
   }
 }
+
+class CreateActivity {
+  String? title;
+  String? email;
+
+  CreateActivity({this.email, this.title});
+
+  Map<String, dynamic> toJsonSave() => {"title": title, 'email': email};
+}

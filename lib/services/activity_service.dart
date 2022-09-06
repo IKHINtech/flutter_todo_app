@@ -20,4 +20,30 @@ class ActivityService {
       throw Exception(e);
     }
   }
+
+  Future addActivity(CreateActivity activity) async {
+    try {
+      var url = Uri.https('todo.api.devcode.gethired.id', '/activity-groups');
+      final data = jsonEncode(activity.toJsonSave());
+
+      await client.post(url,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: data);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<bool> deleteTodo(int id) async {
+    try {
+      var url = Uri.encodeFull(
+          'https://todo.api.devcode.gethired.id/activity-groups/${id}');
+      await client.delete(Uri.parse(url));
+      return true;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }

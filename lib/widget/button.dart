@@ -35,3 +35,31 @@ Widget customButton({VoidCallback? callback}) {
     ),
   );
 }
+
+Widget modalButton(
+        {VoidCallback? callback, Color? color, String? text, Color? fcolor}) =>
+    InkWell(
+      onTap: callback,
+      child: Container(
+        height: 48,
+        width: 117,
+        // padding: EdgeInsets.only(
+        //     left: 15, top: 9.5, right: 15, bottom: 9.5),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.all(
+            Radius.circular(45),
+          ),
+        ),
+        child: Center(
+          child: Text(
+            text!,
+            style: GoogleFonts.poppins(
+              color: fcolor,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
