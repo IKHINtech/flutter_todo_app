@@ -14,7 +14,7 @@ class TodoModel {
   }
 }
 
-class Todo {
+class Todo implements Comparable<Todo> {
   int? id;
   String? title;
   int? activityGroupId;
@@ -27,6 +27,14 @@ class Todo {
       this.activityGroupId,
       this.isActive,
       this.priority});
+
+  @override
+  int compareTo(Todo other) {
+    if (title != other.title) {
+      return -1;
+    }
+    return title!.compareTo(other.title!);
+  }
 
   factory Todo.fromJson(Map<String, dynamic> json) {
     return Todo(

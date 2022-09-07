@@ -8,7 +8,7 @@ class ActivityService {
   Future<ActivityModel> fetchActivity() async {
     try {
       var url = Uri.https('todo.api.devcode.gethired.id', '/activity-groups',
-          {'email': 'yoga+1@skyshi.io'});
+          {'email': 'ikhintech@mail.com'});
       final response = await client.get(url);
       if (response.statusCode == 200) {
         final responseDecode = json.decode(response.body);

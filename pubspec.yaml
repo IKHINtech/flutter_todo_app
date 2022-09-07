@@ -29,6 +29,7 @@ environment:
 dependencies:
   cupertino_icons: ^1.0.2
   dio: ^4.0.6
+  dropdown_button2: ^1.7.2
   flutter:
     sdk: flutter
   google_fonts: ^3.0.1

@@ -28,4 +28,19 @@ class TodoBloc {
       _listTodoFetcher.sink.addError(e.toString());
     }
   }
+
+  filterTodo(int id, int is_active) async {
+    try {
+      final String identityId =
+          DateTime.now().millisecondsSinceEpoch.toString();
+      todoIdentityId = identityId;
+      _listTodoFetcher.sink.addError('LOADING');
+      todoModel = await _todoService.filterTodo(id, is_active);
+      if (todoIdentityId == identityId) {
+        _listTodoFetcher.sink.add(todoModel!);
+      }
+    } catch (e) {
+      _listTodoFetcher.sink.addError(e.toString());
+    }
+  }
 }

@@ -97,7 +97,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     if (_formKey.currentState!.validate()) {
                       try {
                         _formKey.currentState!.save();
-                        activity.email = 'yoga+1@skyshi.io';
+                        activity.email = 'ikhintech@mail.com';
                         await ActivityService().addActivity(activity);
                         Navigator.pop(context, true);
                         fetchData();

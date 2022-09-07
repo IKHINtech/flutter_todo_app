@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/bloc/todo_bloc.dart';
@@ -23,9 +24,18 @@ class _AddActivityState extends State<AddActivity> {
   final TodoBloc _todoBloc = TodoBloc();
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKeySort = GlobalKey<FormState>();
+
+  ValueNotifier is_active = ValueNotifier<int>(0);
+  ValueNotifier filterSet = ValueNotifier<String>('all');
+  ValueNotifier selectedValue = ValueNotifier<String>('');
+  ValueNotifier check = ValueNotifier<Widget>(Container());
+
   final CreateTodo todo = CreateTodo();
   final Todo data = Todo();
   bool isSelected = false;
+  String? selectedValues;
+  // int? is_active;
 
   List<String> list = <String>[
     'Very High',
@@ -34,6 +44,94 @@ class _AddActivityState extends State<AddActivity> {
     'Low',
     'Very Low'
   ];
+  List<String> filter = <String>[
+    'Terbaru',
+    'Terlama',
+    'A-Z',
+    'Z-A',
+    'Belum Selesai'
+  ];
+
+  List<DropdownMenuItem<String>> _addDividersAfterItems(List<String> items) {
+    List<DropdownMenuItem<String>> _menuItems = [];
+    for (var item in items) {
+      _menuItems.addAll(
+        [
+          DropdownMenuItem<String>(
+            onTap: () async {
+              filterSet.value = item;
+
+              if (filterSet.value == item) {
+                check.value = Expanded(
+                  child: Icon(Icons.check_sharp),
+                );
+              }
+              if (filterSet.value == 'Belum Selesai') {
+                if (is_active.value == 0) {
+                  is_active.value = 1;
+                  await filterTodo(widget.activity.id!, 1);
+                } else if (is_active.value == 1) {
+                  is_active.value = 0;
+                  await fetchData();
+                }
+              }
+            },
+            value: item,
+            child: Row(children: [
+              item == 'Terbaru'
+                  ? Image.asset('assets/images/sort-selection-icon.png')
+                  : item == 'Terlama'
+                      ? Image.asset('assets/images/sort-selection-icon(1).png')
+                      : item == 'A-Z'
+                          ? Image.asset(
+                              'assets/images/sort-selection-icon(2).png')
+                          : item == 'Z-A'
+                              ? Image.asset(
+                                  'assets/images/sort-selection-icon(3).png')
+                              : Image.asset(
+                                  'assets/images/sort-selection-icon(4).png'),
+              SizedBox(
+                width: 12,
+              ),
+              Text(
+                item,
+                style: text14tiny,
+              ),
+              Container(
+                child: check.value,
+              )
+            ]),
+          ),
+          //If it's last item, we will not add Divider after it.
+          // if (item != items.last)
+          //   const DropdownMenuItem<String>(
+          //     // enabled: false,
+          //     child: Divider(
+          //       indent: 0,
+          //       endIndent: 0,
+          //       height: 0,
+          //     ),
+          //   ),
+        ],
+      );
+    }
+    return _menuItems;
+  }
+
+  // List<int> _getDividersIndexes() {
+  //   List<int> _dividersIndexes = [];
+  //   for (var i = 0; i < (filter.length * 2) - 1; i++) {
+  //     //Dividers indexes will be the odd indexes
+  //     if (i.isOdd) {
+  //       _dividersIndexes.add(i);
+  //     }
+  //   }
+  //   return _dividersIndexes;
+  // }
+
+  filterTodo(int actId, int filter) async {
+    await _todoBloc.filterTodo(actId, filter);
+  }
 
   fetchData() async {
     await _todoBloc.fetchTodo(widget.activity.id!);
@@ -201,7 +299,10 @@ class _AddActivityState extends State<AddActivity> {
                 SizedBox(
                   height: 12,
                 ),
-                DropdownButtonFormField<String>(
+                DropdownButtonFormField2<String>(
+                  dropdownDecoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(6)),
+                  isExpanded: true,
                   onChanged: (value) {},
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -223,6 +324,7 @@ class _AddActivityState extends State<AddActivity> {
                     }
                   },
                   decoration: InputDecoration(
+                    // isDense: true,
                     contentPadding: EdgeInsets.all(10),
                     border: OutlineInputBorder(
                       borderSide:
@@ -238,6 +340,7 @@ class _AddActivityState extends State<AddActivity> {
                   ),
                   items: list.map<DropdownMenuItem<String>>((priority) {
                     return DropdownMenuItem<String>(
+                      onTap: () {},
                       value: priority,
                       child: Row(
                         children: [
@@ -253,8 +356,8 @@ class _AddActivityState extends State<AddActivity> {
                                             : priority == 'Low'
                                                 ? Colors.blue
                                                 : Colors.purple),
-                            height: 5,
-                            width: 5,
+                            height: 8,
+                            width: 8,
                           ),
                           SizedBox(
                             width: 10,
@@ -385,7 +488,7 @@ class _AddActivityState extends State<AddActivity> {
                 SizedBox(
                   height: 12,
                 ),
-                DropdownButtonFormField<String>(
+                DropdownButtonFormField2<String>(
                   // selectedItemBuilder: (context) => ,
                   onChanged: (value) {},
                   validator: (value) {
@@ -407,6 +510,15 @@ class _AddActivityState extends State<AddActivity> {
                       todoData.priority = 'very-low';
                     }
                   },
+                  value: todoData.priority == 'very-high'
+                      ? 'Very High'
+                      : todoData.priority == 'high'
+                          ? 'High'
+                          : todoData.priority == 'normal'
+                              ? 'Normal'
+                              : todoData.priority == 'low'
+                                  ? 'Low'
+                                  : 'Very Low',
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.all(10),
                     border: OutlineInputBorder(
@@ -438,8 +550,8 @@ class _AddActivityState extends State<AddActivity> {
                                             : priority == 'Low'
                                                 ? Colors.blue
                                                 : Colors.purple),
-                            height: 5,
-                            width: 5,
+                            height: 8,
+                            width: 8,
                           ),
                           SizedBox(
                             width: 10,
@@ -513,7 +625,7 @@ class _AddActivityState extends State<AddActivity> {
   @override
   void dispose() {
     controller.dispose();
-    controller.dispose();
+    controllerItem.dispose();
     _todoBloc.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -571,8 +683,8 @@ class _AddActivityState extends State<AddActivity> {
                                   : todoData.data![index].priority == 'low'
                                       ? Colors.blue
                                       : Colors.purple),
-                  height: 5,
-                  width: 5,
+                  height: 8,
+                  width: 8,
                 ),
                 SizedBox(
                   width: 10,
@@ -650,18 +762,63 @@ class _AddActivityState extends State<AddActivity> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color.fromRGBO(229, 229, 229, 1),
-                      ),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(45),
+                  Form(
+                    key: _formKeySort,
+                    child: Container(
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton2(
+                          isExpanded: true,
+                          customButton: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Color.fromRGBO(229, 229, 229, 1),
+                              ),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(45),
+                              ),
+                            ),
+                            child: Image.asset('assets/images/Group.png'),
+                          ),
+                          items: _addDividersAfterItems(filter),
+                          value: selectedValues,
+                          onChanged: (value) {
+                            selectedValue.value = value;
+                          },
+
+                          iconSize: 30,
+                          // iconEnabledColor: Colors.yellow,
+                          // iconDisabledColor: Colors.grey,
+                          buttonHeight: 50,
+                          buttonWidth: 50,
+                          buttonPadding:
+                              const EdgeInsets.only(left: 14, right: 14),
+                          buttonDecoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(45),
+                            border: Border.all(
+                              color: Color.fromRGBO(229, 229, 229, 1),
+                            ),
+                          ),
+                          buttonElevation: 2,
+                          itemHeight: 40,
+                          itemPadding:
+                              const EdgeInsets.only(left: 14, right: 14),
+                          // dropdownMaxHeight: 200,
+                          dropdownWidth: 200,
+                          dropdownPadding: null,
+                          dropdownDecoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            // color: Colors.redAccent,
+                          ),
+                          dropdownElevation: 8,
+                          scrollbarRadius: const Radius.circular(40),
+                          scrollbarThickness: 6,
+                          scrollbarAlwaysShow: true,
+                        ),
                       ),
                     ),
-                    child: Image.asset('assets/images/Group.png'),
                   ),
                   SizedBox(
                     width: 8,

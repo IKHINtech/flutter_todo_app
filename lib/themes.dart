@@ -24,3 +24,6 @@ TextStyle text12 = GoogleFonts.poppins(
 
 TextStyle text10 =
     GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 10);
+
+TextStyle text14tiny =
+    GoogleFonts.poppins(fontWeight: FontWeight.w400, fontSize: 14);

@@ -22,6 +22,24 @@ class TodoService {
     }
   }
 
+  Future<TodoModel> filterTodo(int activityId, int is_active) async {
+    try {
+      var url = Uri.https('todo.api.devcode.gethired.id', '/todo-items', {
+        'activity_group_id': activityId.toString(),
+        'is_active': is_active.toString()
+      });
+      final response = await client.get(url);
+      if (response.statusCode == 200) {
+        final responseDecode = json.decode(response.body);
+        return TodoModel.fromJson(responseDecode);
+      } else {
+        throw Exception(response.statusCode.toString());
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   Future<CreateTodo> saveTodo({required CreateTodo todo}) async {
     try {
       var url = Uri.https('todo.api.devcode.gethired.id', '/todo-items');
